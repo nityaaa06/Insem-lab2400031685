@@ -1,36 +1,56 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <meta charset="UTF-8">
-  <title>Weather App</title>
-  <style>
-    body {font-family:sans-serif;text-align:center;background:linear-gradient(#38bdf8,#2563eb);color:#fff;min-height:100vh;display:flex;flex-direction:column;justify-content:center;}
-    input,button {padding:8px;border:none;border-radius:6px;}
-    button{background:#1e3a8a;color:#fff;cursor:pointer;}
-    .card{margin-top:15px;background:#ffffff33;padding:15px;border-radius:10px;display:inline-block;}
-  </style>
-</head>
-<body>
-  <h2>🌤 Weather App</h2>
-  <input id="city" placeholder="Enter city"><button onclick="getWeather()">Get</button>
-  <div id="result"></div>
+import React, { useState } from "react";
 
-  <script>
-    const key="YOUR_API_KEY";
-    async function getWeather(){
-      const city=document.getElementById("city").value;
-      const res=await fetch(https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${key}&units=metric);
-      const data=await res.json();
-      if(res.ok){
-        document.getElementById("result").innerHTML=
-          `<div class='card'><h3>${data.name}</h3>
-          <p>🌡 ${data.main.temp}°C</p>
-          <p>💧 ${data.main.humidity}%</p>
-          <p>🌦 ${data.weather[0].main}</p></div>`;
-      }else{
-        document.getElementById("result").innerHTML="<p>City not found!</p>";
-      }
+function App() {
+  const [city, setCity] = useState("");
+  const [weather, setWeather] = useState(null);
+  const [error, setError] = useState("");
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError("");
+    setWeather(null);
+
+    // OpenWeatherMap API endpoint
+    const apiKey = "YOUR_API_KEY"; // <-- Replace this with your own key!
+    const url = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&units=metric`;
+
+    try {
+      const res = await fetch(url);
+      if (!res.ok) throw new Error("City not found");
+      const data = await res.json();
+      setWeather({
+        temperature: data.main.temp,
+        humidity: data.main.humidity,
+        condition: data.weather[0].main,
+      });
+    } catch (err) {
+      setError(err.message);
     }
-  </script>
-</body>
-</html>
+  };
+
+  return (
+    <div style={{ maxWidth: 350, margin: "auto", padding: 20 }}>
+      <h2>Weather Checker</h2>
+      <form onSubmit={handleSubmit}>
+        <input
+          type="text"
+          placeholder="Enter city name"
+          value={city}
+          onChange={(e) => setCity(e.target.value)}
+          style={{ width: "65%", marginRight: 10, padding: "8px" }}
+        />
+        <button type="submit" style={{ padding: "8px 12px" }}>Get Weather</button>
+      </form>
+      {error && <p style={{ color: "red" }}>{error}</p>}
+      {weather && (
+        <div style={{ marginTop: 20 }}>
+          <p><strong>Temperature:</strong> {weather.temperature} °C</p>
+          <p><strong>Humidity:</strong> {weather.humidity} %</p>
+          <p><strong>Condition:</strong> {weather.condition}</p>
+        </div>
+      )}
+    </div>
+  );
+}
+
+export default App;
