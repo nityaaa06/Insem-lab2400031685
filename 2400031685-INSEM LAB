@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Weather App</title>
+  <style>
+    body {font-family:sans-serif;text-align:center;background:linear-gradient(#38bdf8,#2563eb);color:#fff;min-height:100vh;display:flex;flex-direction:column;justify-content:center;}
+    input,button {padding:8px;border:none;border-radius:6px;}
+    button{background:#1e3a8a;color:#fff;cursor:pointer;}
+    .card{margin-top:15px;background:#ffffff33;padding:15px;border-radius:10px;display:inline-block;}
+  </style>
+</head>
+<body>
+  <h2>🌤 Weather App</h2>
+  <input id="city" placeholder="Enter city"><button onclick="getWeather()">Get</button>
+  <div id="result"></div>
+
+  <script>
+    const key="YOUR_API_KEY";
+    async function getWeather(){
+      const city=document.getElementById("city").value;
+      const res=await fetch(https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${key}&units=metric);
+      const data=await res.json();
+      if(res.ok){
+        document.getElementById("result").innerHTML=
+          `<div class='card'><h3>${data.name}</h3>
+          <p>🌡 ${data.main.temp}°C</p>
+          <p>💧 ${data.main.humidity}%</p>
+          <p>🌦 ${data.weather[0].main}</p></div>`;
+      }else{
+        document.getElementById("result").innerHTML="<p>City not found!</p>";
+      }
+    }
+  </script>
+</body>
+</html>
